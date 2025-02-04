@@ -14,12 +14,13 @@ public class User {
     private String email;
     private LocalDateTime regiDate;
     private LocalDateTime updateDate;
+    private boolean deleted;
 
     public User (String name, String email) {
         this.name = name;
         this.email = email;
         this.regiDate = LocalDateTime.now();
         this.updateDate = LocalDateTime.now();
-
+        this.deleted = false;
     }
 }

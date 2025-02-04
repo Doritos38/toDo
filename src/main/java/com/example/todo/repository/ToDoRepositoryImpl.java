@@ -5,6 +5,7 @@ import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.entity.ToDo;
 import com.example.todo.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -41,6 +42,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
         paprameters.put("date", toDo.getDate());
         paprameters.put("updateDate", toDo.getUpdateDate());
         paprameters.put("userId", toDo.getUserId());
+        paprameters.put("deleted", toDo.isDeleted());
 
         Number id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(paprameters));
 
@@ -52,7 +54,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
 
         String sql = "SELECT t.*, u.email FROM todo t " +
                 "LEFT JOIN user u ON t.userId = u.id " +
-                "WHERE (DATE(t.updateDate) = ? OR ? IS NULL) " +
+                "WHERE t.deleted = false AND (DATE(t.updateDate) = ? OR ? IS NULL) " +
                 "AND (t.name = ? OR ? IS NULL) AND (t.userId = ? OR ? IS NULL) " +
                 "ORDER BY updateDate DESC";
 
@@ -85,7 +87,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     @Override
     public int delete(Long id) {
 
-        return jdbcTemplate.update("DELETE FROM todo WHERE id = ?", id);
+        return jdbcTemplate.update("UPDATE todo SET deleted = true WHERE id = ?", id);
     }
 
     @Override
@@ -98,6 +100,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
         paprameters.put("email", user.getEmail());
         paprameters.put("regiDate", user.getRegiDate());
         paprameters.put("updateDate", user.getUpdateDate());
+        paprameters.put("deleted", user.isDeleted());
 
         Number id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(paprameters));
 
@@ -109,7 +112,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
 
         String sql = "SELECT t.*, u.email FROM todo t " +
                 "LEFT JOIN user u ON t.userId = u.id " +
-                "WHERE (DATE(t.updateDate) = ? OR ? IS NULL) " +
+                "WHERE t.deleted = false AND (DATE(t.updateDate) = ? OR ? IS NULL) " +
                 "AND (t.name = ? OR ? IS NULL) AND (t.userId = ? OR ? IS NULL) " +
                 "ORDER BY updateDate DESC LIMIT ? OFFSET ?";
 
@@ -139,6 +142,12 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     public int checkSize() {
 
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TODO", Integer.class);
+    }
+
+    @Override
+    public boolean checkDelete(Long id) {
+
+        return jdbcTemplate.queryForObject("SELECT deleted FROM TODO WHERE id = ?", Boolean.class, id);
     }
 
 

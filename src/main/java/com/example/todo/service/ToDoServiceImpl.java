@@ -57,6 +57,8 @@ public class ToDoServiceImpl implements ToDoService{
 
         if (optionalToDo.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong id");
+        }else if(toDoRepository.checkDelete(id)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Deleted id");
         }
 
         return new ToDoResponseDto(optionalToDo.get());
@@ -87,6 +89,8 @@ public class ToDoServiceImpl implements ToDoService{
 
         if(toDoRepository.checkPassword(dto.getId(), dto.getPassword())==0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
+        }else if(toDoRepository.checkDelete(dto.getId())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Deleted id");
         }
 
         int result = toDoRepository.delete(dto.getId());

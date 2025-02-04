@@ -27,4 +27,6 @@ public interface ToDoRepository {
     List<ToDoResponseDto> paging (ToDoRequestDto dto);
 
     int checkSize ();
+
+    boolean checkDelete(Long id);
 }
