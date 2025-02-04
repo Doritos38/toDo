@@ -1,9 +1,8 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.PagingResponseDto;
-import com.example.todo.dto.ToDoRequestDto;
-import com.example.todo.dto.ToDoResponseDto;
+import com.example.todo.dto.*;
 import com.example.todo.service.ToDoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +22,7 @@ public class ToDoListController {
     }
 
     @RequestMapping("/add")
-    public ResponseEntity<ToDoResponseDto> createToDo(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<ToDoResponseDto> createToDo(@RequestBody @Valid SaveRequestDto dto) {
 
         toDoService.saveToDo(dto);
 
@@ -31,25 +30,25 @@ public class ToDoListController {
     }
 
     @RequestMapping("/viewAll")
-    public ResponseEntity<List<ToDoResponseDto>> viewAllToDo(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<List<ToDoResponseDto>> viewAllToDo(@RequestBody @Valid ViewAllRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.viewAll(dto), HttpStatus.OK);
     }
 
     @RequestMapping("/allPage")
-    public ResponseEntity<PagingResponseDto<ToDoResponseDto>> PaigingAllToDo(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<PagingResponseDto<ToDoResponseDto>> PaigingAllToDo(@RequestBody @Valid AllPageRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.pagingAll(dto), HttpStatus.OK);
     }
 
     @RequestMapping("/view")
-    public ResponseEntity<ToDoResponseDto> viewToDo(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<ToDoResponseDto> viewToDo(@RequestBody @Valid ViewRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.viewId(dto.getId()), HttpStatus.OK);
     }
 
     @RequestMapping("/update")
-    public ResponseEntity<ToDoResponseDto> updateToDo(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<ToDoResponseDto> updateToDo(@RequestBody @Valid UpdateRequestDto dto) {
 
         toDoService.update(dto);
 
@@ -57,7 +56,7 @@ public class ToDoListController {
     }
 
     @RequestMapping("/delete")
-    public ResponseEntity<ToDoResponseDto> deleteToDo(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<ToDoResponseDto> deleteToDo(@RequestBody @Valid DeleteRequestDto dto) {
 
         toDoService.delete(dto);
 
@@ -65,7 +64,7 @@ public class ToDoListController {
     }
 
     @RequestMapping("/regi")
-    public ResponseEntity<ToDoResponseDto> regiUser(@RequestBody ToDoRequestDto dto) {
+    public ResponseEntity<ToDoResponseDto> regiUser(@RequestBody @Valid RegistRequestDto dto) {
 
         toDoService.regiUser(dto);
 

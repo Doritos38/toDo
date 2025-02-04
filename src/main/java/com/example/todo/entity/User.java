@@ -16,7 +16,7 @@ public class User {
     private LocalDateTime updateDate;
     private boolean deleted;
 
-    public User (String name, String email) {
+    public User(String name, String email) {
         this.name = name;
         this.email = email;
         this.regiDate = LocalDateTime.now();

@@ -2,7 +2,10 @@ package com.example.todo.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,7 +20,7 @@ public class ToDo {
     private Long userId;
     private boolean deleted;
 
-    public ToDo (String name, String contents, String password, Long userId) {
+    public ToDo(String name, String contents, String password, Long userId) {
         this.name = name;
         this.contents = contents;
         this.password = password;

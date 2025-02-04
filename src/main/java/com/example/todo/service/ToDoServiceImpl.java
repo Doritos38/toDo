@@ -1,8 +1,6 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.PagingResponseDto;
-import com.example.todo.dto.ToDoRequestDto;
-import com.example.todo.dto.ToDoResponseDto;
+import com.example.todo.dto.*;
 import com.example.todo.entity.ToDo;
 import com.example.todo.entity.User;
 import com.example.todo.repository.ToDoRepository;
@@ -16,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ToDoServiceImpl implements ToDoService{
+public class ToDoServiceImpl implements ToDoService {
 
     private final ToDoRepository toDoRepository;
 
@@ -26,23 +24,19 @@ public class ToDoServiceImpl implements ToDoService{
 
     @Override
     @Transactional
-    public void saveToDo(ToDoRequestDto dto) {
-
-        if(dto.getName() == null || dto.getContents() == null || dto.getPassword() == null || dto.getUserId() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
-        }
+    public void saveToDo(SaveRequestDto dto) {
 
         ToDo toDo = new ToDo(dto.getName(), dto.getContents(), dto.getPassword(), dto.getUserId());
 
         Long id = toDoRepository.saveToDo(toDo);
 
-        if(id == null){
+        if (id == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "save failed");
         }
     }
 
     @Override
-    public List<ToDoResponseDto> viewAll(ToDoRequestDto dto) {
+    public List<ToDoResponseDto> viewAll(ViewAllRequestDto dto) {
 
         List<ToDoResponseDto> allView = toDoRepository.viewAll(dto);
 
@@ -57,7 +51,7 @@ public class ToDoServiceImpl implements ToDoService{
 
         if (optionalToDo.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong id");
-        }else if(toDoRepository.checkDelete(id)){
+        } else if (toDoRepository.checkDelete(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Deleted id");
         }
 
@@ -65,13 +59,12 @@ public class ToDoServiceImpl implements ToDoService{
     }
 
     @Override
-    public void update(ToDoRequestDto dto) {
-        if (dto.getContents() == null || dto.getName() == null || dto.getPassword() == null || dto.getId() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
-        }
+    public void update(UpdateRequestDto dto) {
 
-        if(toDoRepository.checkPassword(dto.getId(), dto.getPassword())==0){
+        if (toDoRepository.checkPassword(dto.getId(), dto.getPassword()) == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
+        } else if (toDoRepository.checkDelete(dto.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Deleted id");
         }
 
         int result = toDoRepository.update(dto.getContents(), dto.getName(), LocalDateTime.now(), dto.getId());
@@ -82,14 +75,11 @@ public class ToDoServiceImpl implements ToDoService{
     }
 
     @Override
-    public void delete(ToDoRequestDto dto) {
-        if (dto.getPassword() == null || dto.getId() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
-        }
+    public void delete(DeleteRequestDto dto) {
 
-        if(toDoRepository.checkPassword(dto.getId(), dto.getPassword())==0){
+        if (toDoRepository.checkPassword(dto.getId(), dto.getPassword()) == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
-        }else if(toDoRepository.checkDelete(dto.getId())){
+        } else if (toDoRepository.checkDelete(dto.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Deleted id");
         }
 
@@ -102,26 +92,25 @@ public class ToDoServiceImpl implements ToDoService{
     }
 
     @Override
-    public void regiUser(ToDoRequestDto dto) {
-        if(dto.getName() == null || dto.getEmail() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
-        }
+    public void regiUser(RegistRequestDto dto) {
+
         User user = new User(dto.getName(), dto.getEmail());
         Long id = toDoRepository.regi(user);
 
-        if(id == null){
+        if (id == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "regi failed");
         }
 
     }
 
     @Override
-    public PagingResponseDto<ToDoResponseDto> pagingAll(ToDoRequestDto dto) {
+    public PagingResponseDto<ToDoResponseDto> pagingAll(AllPageRequestDto dto) {
+        int offSet = (dto.getPage() - 1) * dto.getSize();
 
         int totalSize = toDoRepository.checkSize();
 
         int totalPage = (int) Math.ceil((double) totalSize / dto.getSize());
 
-        return new PagingResponseDto<>(toDoRepository.paging(dto), dto.getPage(), dto.getSize(), totalSize, totalPage);
+        return new PagingResponseDto<>(toDoRepository.paging(dto, offSet), dto.getPage(), dto.getSize(), totalSize, totalPage);
     }
 }

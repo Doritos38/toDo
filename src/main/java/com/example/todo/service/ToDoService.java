@@ -1,23 +1,21 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.PagingResponseDto;
-import com.example.todo.dto.ToDoRequestDto;
-import com.example.todo.dto.ToDoResponseDto;
+import com.example.todo.dto.*;
 
 import java.util.List;
 
 public interface ToDoService {
-    void saveToDo(ToDoRequestDto dto);
+    void saveToDo(SaveRequestDto dto);
 
-    List<ToDoResponseDto> viewAll(ToDoRequestDto dto);
+    List<ToDoResponseDto> viewAll(ViewAllRequestDto dto);
 
     ToDoResponseDto viewId(Long id);
 
-    void update(ToDoRequestDto dto);
+    void update(UpdateRequestDto dto);
 
-    void delete(ToDoRequestDto dto);
+    void delete(DeleteRequestDto dto);
 
-    void regiUser(ToDoRequestDto dto);
+    void regiUser(RegistRequestDto dto);
 
-    PagingResponseDto<ToDoResponseDto> pagingAll(ToDoRequestDto dto);
+    PagingResponseDto<ToDoResponseDto> pagingAll(AllPageRequestDto dto);
 }

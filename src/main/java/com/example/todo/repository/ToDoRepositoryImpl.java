@@ -1,11 +1,11 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.ToDoRequestDto;
+import com.example.todo.dto.AllPageRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
+import com.example.todo.dto.ViewAllRequestDto;
 import com.example.todo.entity.ToDo;
 import com.example.todo.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class ToDoRepositoryImpl implements ToDoRepository{
+public class ToDoRepositoryImpl implements ToDoRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -50,7 +50,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     }
 
     @Override
-    public List<ToDoResponseDto> viewAll(ToDoRequestDto dto) { // 공백 수정
+    public List<ToDoResponseDto> viewAll(ViewAllRequestDto dto) { // 공백 수정
 
         String sql = "SELECT t.*, u.email FROM todo t " +
                 "LEFT JOIN user u ON t.userId = u.id " +
@@ -108,7 +108,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     }
 
     @Override
-    public List<ToDoResponseDto> paging(ToDoRequestDto dto) {
+    public List<ToDoResponseDto> paging(AllPageRequestDto dto, int offSet) {
 
         String sql = "SELECT t.*, u.email FROM todo t " +
                 "LEFT JOIN user u ON t.userId = u.id " +
@@ -118,7 +118,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
 
         return jdbcTemplate.query(sql, pageResponseDtoRowMapper(),
                 dto.getDate(), dto.getDate(), dto.getName(), dto.getName(), dto.getUserId(), dto.getUserId(),
-                dto.getSize(), dto.getPage());
+                dto.getSize(), offSet);
     }
 
     private RowMapper<ToDoResponseDto> pageResponseDtoRowMapper() {
@@ -141,7 +141,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     @Override
     public int checkSize() {
 
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TODO", Integer.class);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TODO WHERE deleted = false", Integer.class);
     }
 
     @Override

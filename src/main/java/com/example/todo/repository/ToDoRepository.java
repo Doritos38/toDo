@@ -1,7 +1,8 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.ToDoRequestDto;
+import com.example.todo.dto.AllPageRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
+import com.example.todo.dto.ViewAllRequestDto;
 import com.example.todo.entity.ToDo;
 import com.example.todo.entity.User;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 public interface ToDoRepository {
     Long saveToDo(ToDo toDo);
 
-    List<ToDoResponseDto> viewAll(ToDoRequestDto dto);
+    List<ToDoResponseDto> viewAll(ViewAllRequestDto dto);
 
     Optional<ToDo> viewId(Long id);
 
@@ -24,9 +25,9 @@ public interface ToDoRepository {
 
     Long regi(User user);
 
-    List<ToDoResponseDto> paging (ToDoRequestDto dto);
+    List<ToDoResponseDto> paging(AllPageRequestDto dto, int offSet);
 
-    int checkSize ();
+    int checkSize();
 
     boolean checkDelete(Long id);
 }
