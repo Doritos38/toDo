@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/asdasd")
+@RequestMapping("/toDo")
 public class ToDoListController {
 
     private final ToDoService toDoService;
