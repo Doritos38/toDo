@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.PagingResponseDto;
 import com.example.todo.dto.ToDoRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.entity.ToDo;
@@ -108,5 +109,15 @@ public class ToDoServiceImpl implements ToDoService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "regi failed");
         }
 
+    }
+
+    @Override
+    public PagingResponseDto<ToDoResponseDto> pagingAll(ToDoRequestDto dto) {
+
+        int totalSize = toDoRepository.checkSize();
+
+        int totalPage = (int) Math.ceil((double) totalSize / dto.getSize());
+
+        return new PagingResponseDto<>(toDoRepository.paging(dto), dto.getPage(), dto.getSize(), totalSize, totalPage);
     }
 }

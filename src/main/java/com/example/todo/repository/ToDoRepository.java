@@ -23,4 +23,8 @@ public interface ToDoRepository {
     int delete(Long id);
 
     Long regi(User user);
+
+    List<ToDoResponseDto> paging (ToDoRequestDto dto);
+
+    int checkSize ();
 }

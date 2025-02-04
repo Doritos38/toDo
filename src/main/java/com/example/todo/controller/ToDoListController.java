@@ -1,5 +1,6 @@
 package com.example.todo.controller;
 
+import com.example.todo.dto.PagingResponseDto;
 import com.example.todo.dto.ToDoRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.service.ToDoService;
@@ -33,6 +34,12 @@ public class ToDoListController {
     public ResponseEntity<List<ToDoResponseDto>> viewAllToDo(@RequestBody ToDoRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.viewAll(dto), HttpStatus.OK);
+    }
+
+    @RequestMapping("/allPage")
+    public ResponseEntity<PagingResponseDto<ToDoResponseDto>> PaigingAllToDo(@RequestBody ToDoRequestDto dto) {
+
+        return new ResponseEntity<>(toDoService.pagingAll(dto), HttpStatus.OK);
     }
 
     @RequestMapping("/view")

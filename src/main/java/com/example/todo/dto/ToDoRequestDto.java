@@ -13,4 +13,6 @@ public class ToDoRequestDto {
     private String email;
     private String regiDate;
     private String userUpdateDate;
+    private int size;
+    private int page;
 }

@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.dto.PagingResponseDto;
 import com.example.todo.dto.ToDoRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
 
@@ -17,4 +18,6 @@ public interface ToDoService {
     void delete(ToDoRequestDto dto);
 
     void regiUser(ToDoRequestDto dto);
+
+    PagingResponseDto<ToDoResponseDto> pagingAll(ToDoRequestDto dto);
 }

@@ -5,7 +5,6 @@ import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.entity.ToDo;
 import com.example.todo.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -54,10 +53,8 @@ public class ToDoRepositoryImpl implements ToDoRepository{
         String sql = "SELECT t.*, u.email FROM todo t " +
                 "LEFT JOIN user u ON t.userId = u.id " +
                 "WHERE (DATE(t.updateDate) = ? OR ? IS NULL) " +
-                "AND (t.name = ? OR ? IS NULL) AND (t.userId = ? OR ? IS NULL)";
-
-//                "SELECT * FROM todo WHERE (DATE(updateDate) = ? OR ? IS NULL) AND " +
-//                "(name = ? OR ? IS NULL) AND (userId = ? OR ? IS NULL)";
+                "AND (t.name = ? OR ? IS NULL) AND (t.userId = ? OR ? IS NULL) " +
+                "ORDER BY updateDate DESC";
 
         return jdbcTemplate.query(sql, toDoResponseDtoRowMapper(),
                 dto.getDate(), dto.getDate(), dto.getName(), dto.getName(), dto.getUserId(), dto.getUserId());
@@ -106,6 +103,44 @@ public class ToDoRepositoryImpl implements ToDoRepository{
 
         return id.longValue();
     }
+
+    @Override
+    public List<ToDoResponseDto> paging(ToDoRequestDto dto) {
+
+        String sql = "SELECT t.*, u.email FROM todo t " +
+                "LEFT JOIN user u ON t.userId = u.id " +
+                "WHERE (DATE(t.updateDate) = ? OR ? IS NULL) " +
+                "AND (t.name = ? OR ? IS NULL) AND (t.userId = ? OR ? IS NULL) " +
+                "ORDER BY updateDate DESC LIMIT ? OFFSET ?";
+
+        return jdbcTemplate.query(sql, pageResponseDtoRowMapper(),
+                dto.getDate(), dto.getDate(), dto.getName(), dto.getName(), dto.getUserId(), dto.getUserId(),
+                dto.getSize(), dto.getPage());
+    }
+
+    private RowMapper<ToDoResponseDto> pageResponseDtoRowMapper() {
+
+        return new RowMapper<ToDoResponseDto>() {
+            @Override
+            public ToDoResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new ToDoResponseDto(
+                        rs.getLong("t.id"),
+                        rs.getLong("t.userId"),
+                        rs.getString("t.name"),
+                        rs.getString("u.email"),
+                        rs.getString("t.contents"),
+                        rs.getDate("t.updateDate").toLocalDate()
+                );
+            }
+        };
+    }
+
+    @Override
+    public int checkSize() {
+
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TODO", Integer.class);
+    }
+
 
     private RowMapper<ToDoResponseDto> toDoResponseDtoRowMapper() {
         return new RowMapper<ToDoResponseDto>() {
