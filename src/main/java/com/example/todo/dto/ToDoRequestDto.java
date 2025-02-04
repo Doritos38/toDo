@@ -8,5 +8,5 @@ public class ToDoRequestDto {
     private String contents;
     private String password;
     private String date;
-    private String id;
+    private Long id;
 }

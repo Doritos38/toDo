@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class ToDoServiceImpl implements ToDoService{
     @Override
     public List<ToDoResponseDto> viewAll(ToDoRequestDto dto) {
 
-        List<ToDoResponseDto> allView = toDoRepository.findAllView(dto);
+        List<ToDoResponseDto> allView = toDoRepository.viewAll(dto);
 
 
 
@@ -46,14 +47,50 @@ public class ToDoServiceImpl implements ToDoService{
     }
 
     @Override
-    public ToDoResponseDto view(ToDoRequestDto dto) {
+    public ToDoResponseDto viewId(Long id) {
 
-        Optional<ToDo> optionalToDo = toDoRepository.findview(dto);
+
+        Optional<ToDo> optionalToDo = toDoRepository.viewId(id);
 
         if (optionalToDo.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + dto.getId());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong id");
         }
 
         return new ToDoResponseDto(optionalToDo.get());
+    }
+
+    @Override
+    public void update(ToDoRequestDto dto) {
+        if (dto.getContents() == null || dto.getName() == null || dto.getPassword() == null || dto.getId() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
+        }
+
+        if(toDoRepository.checkPassword(dto.getId(), dto.getPassword())==0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
+        }
+
+        int result = toDoRepository.update(dto.getContents(), dto.getName(), LocalDateTime.now(), dto.getId());
+
+        if (result == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong input");
+        }
+    }
+
+    @Override
+    public void delete(ToDoRequestDto dto) {
+        if (dto.getPassword() == null || dto.getId() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
+        }
+
+        if(toDoRepository.checkPassword(dto.getId(), dto.getPassword())==0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
+        }
+
+        int result = toDoRepository.delete(dto.getId());
+
+        if (result == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong input");
+        }
+
     }
 }

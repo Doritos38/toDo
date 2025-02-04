@@ -10,5 +10,9 @@ public interface ToDoService {
 
     List<ToDoResponseDto> viewAll(ToDoRequestDto dto);
 
-    ToDoResponseDto view(ToDoRequestDto dto);
+    ToDoResponseDto viewId(Long id);
+
+    void update(ToDoRequestDto dto);
+
+    void delete(ToDoRequestDto dto);
 }

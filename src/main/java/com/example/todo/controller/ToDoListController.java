@@ -38,7 +38,22 @@ public class ToDoListController {
     @RequestMapping("/view")
     public ResponseEntity<ToDoResponseDto> viewToDo(@RequestBody ToDoRequestDto dto) {
 
-        return new ResponseEntity<>(toDoService.view(dto), HttpStatus.OK);
+        return new ResponseEntity<>(toDoService.viewId(dto.getId()), HttpStatus.OK);
     }
 
+    @RequestMapping("/update")
+    public ResponseEntity<ToDoResponseDto> updateToDo(@RequestBody ToDoRequestDto dto) {
+
+        toDoService.update(dto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping("/delete")
+    public ResponseEntity<ToDoResponseDto> deleteToDo(@RequestBody ToDoRequestDto dto) {
+
+        toDoService.delete(dto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,21 +46,42 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     }
 
     @Override
-    public List<ToDoResponseDto> findAllView(ToDoRequestDto dto) {
+    public List<ToDoResponseDto> viewAll(ToDoRequestDto dto) { // 공백 수정
 
-        String sql = "SELECT * FROM todo WHERE (updateDate = ? OR ? IS NULL) AND (name = ? OR ? IS NULL)";
+        String sql = "SELECT * FROM todo WHERE (DATE(updateDate) = ? OR ? IS NULL) AND (name = ? OR ? IS NULL)";
 
-        return jdbcTemplate.query(sql, toDoRowMapper(), dto.getDate(), dto.getDate(), dto.getName(), dto.getName());
+        return jdbcTemplate.query(sql, toDoResponseDtoRowMapper(), dto.getDate(), dto.getDate(), dto.getName(), dto.getName());
     }
 
     @Override
-    public Optional<ToDo> findview(ToDoRequestDto dto) {
-        List<ToDo> result = jdbcTemplate.query("select * from todo where id = ?", toDoRowMapper2(), dto.getId());
+    public Optional<ToDo> viewId(Long id) {
+
+        List<ToDo> result = jdbcTemplate.query("select * from todo where id = ?", toDoRowMapper(), id);
 
         return result.stream().findAny();
     }
 
-    private RowMapper<ToDoResponseDto> toDoRowMapper() {
+    @Override
+    public int update(String contents, String name, LocalDateTime now, Long id) {
+
+        return jdbcTemplate.update("UPDATE todo SET contents = ?, name = ?, updateDate = ? WHERE id = ?"
+                , contents, name, now, id);
+    }
+
+    @Override
+    public int checkPassword(Long id, String password) {
+
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM todo WHERE id = ? AND password = ?"
+                , Integer.class, id, password);
+    }
+
+    @Override
+    public int delete(Long id) {
+
+        return jdbcTemplate.update("DELETE FROM todo WHERE id = ?", id);
+    }
+
+    private RowMapper<ToDoResponseDto> toDoResponseDtoRowMapper() {
         return new RowMapper<ToDoResponseDto>() {
             @Override
             public ToDoResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -73,7 +95,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
         };
     }
 
-    private RowMapper<ToDo> toDoRowMapper2() {
+    private RowMapper<ToDo> toDoRowMapper() {
         return new RowMapper<ToDo>() {
             @Override
             public ToDo mapRow(ResultSet rs, int rowNum) throws SQLException {
