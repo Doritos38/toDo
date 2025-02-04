@@ -3,6 +3,7 @@ package com.example.todo.service;
 import com.example.todo.dto.ToDoRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.entity.ToDo;
+import com.example.todo.entity.User;
 import com.example.todo.repository.ToDoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,13 @@ public class ToDoServiceImpl implements ToDoService{
     @Transactional
     public void saveToDo(ToDoRequestDto dto) {
 
-        ToDo toDo = new ToDo(dto.getName(), dto.getContents(), dto.getPassword());
+        if(dto.getName() == null || dto.getContents() == null || dto.getPassword() == null || dto.getUserId() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
+        }
 
-        Long id = toDoRepository.saveMemo(toDo);
+        ToDo toDo = new ToDo(dto.getName(), dto.getContents(), dto.getPassword(), dto.getUserId());
+
+        Long id = toDoRepository.saveToDo(toDo);
 
         if(id == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "save failed");
@@ -39,9 +44,6 @@ public class ToDoServiceImpl implements ToDoService{
     public List<ToDoResponseDto> viewAll(ToDoRequestDto dto) {
 
         List<ToDoResponseDto> allView = toDoRepository.viewAll(dto);
-
-
-
 
         return allView;
     }
@@ -90,6 +92,20 @@ public class ToDoServiceImpl implements ToDoService{
 
         if (result == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong input");
+        }
+
+    }
+
+    @Override
+    public void regiUser(ToDoRequestDto dto) {
+        if(dto.getName() == null || dto.getEmail() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NUll");
+        }
+        User user = new User(dto.getName(), dto.getEmail());
+        Long id = toDoRepository.regi(user);
+
+        if(id == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "regi failed");
         }
 
     }

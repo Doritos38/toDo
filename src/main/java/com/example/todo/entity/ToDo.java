@@ -14,14 +14,15 @@ public class ToDo {
     private String password;
     private LocalDateTime date;
     private LocalDateTime updateDate;
+    private Long userId;
 
-    public ToDo (String name, String contents, String password) {
+    public ToDo (String name, String contents, String password, Long userId) {
         this.name = name;
         this.contents = contents;
         this.password = password;
         this.date = LocalDateTime.now();
         this.updateDate = LocalDateTime.now();
-
+        this.userId = userId;
     }
 
 }

@@ -56,4 +56,14 @@ public class ToDoListController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @RequestMapping("/regi")
+    public ResponseEntity<ToDoResponseDto> regiUser(@RequestBody ToDoRequestDto dto) {
+
+        toDoService.regiUser(dto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 }

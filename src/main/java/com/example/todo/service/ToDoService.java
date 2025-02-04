@@ -15,4 +15,6 @@ public interface ToDoService {
     void update(ToDoRequestDto dto);
 
     void delete(ToDoRequestDto dto);
+
+    void regiUser(ToDoRequestDto dto);
 }

@@ -3,13 +3,14 @@ package com.example.todo.repository;
 import com.example.todo.dto.ToDoRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.entity.ToDo;
+import com.example.todo.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ToDoRepository {
-    Long saveMemo(ToDo toDo);
+    Long saveToDo(ToDo toDo);
 
     List<ToDoResponseDto> viewAll(ToDoRequestDto dto);
 
@@ -20,4 +21,6 @@ public interface ToDoRepository {
     int checkPassword(Long id, String password);
 
     int delete(Long id);
+
+    Long regi(User user);
 }

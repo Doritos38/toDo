@@ -9,4 +9,8 @@ public class ToDoRequestDto {
     private String password;
     private String date;
     private Long id;
+    private Long userId;
+    private String email;
+    private String regiDate;
+    private String userUpdateDate;
 }

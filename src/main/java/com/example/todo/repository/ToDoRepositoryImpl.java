@@ -3,7 +3,9 @@ package com.example.todo.repository;
 import com.example.todo.dto.ToDoRequestDto;
 import com.example.todo.dto.ToDoResponseDto;
 import com.example.todo.entity.ToDo;
+import com.example.todo.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -28,7 +30,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     }
 
     @Override
-    public Long saveMemo(ToDo toDo) {
+    public Long saveToDo(ToDo toDo) {
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         jdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
@@ -39,6 +41,7 @@ public class ToDoRepositoryImpl implements ToDoRepository{
         paprameters.put("password", toDo.getPassword());
         paprameters.put("date", toDo.getDate());
         paprameters.put("updateDate", toDo.getUpdateDate());
+        paprameters.put("userId", toDo.getUserId());
 
         Number id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(paprameters));
 
@@ -48,9 +51,16 @@ public class ToDoRepositoryImpl implements ToDoRepository{
     @Override
     public List<ToDoResponseDto> viewAll(ToDoRequestDto dto) { // 공백 수정
 
-        String sql = "SELECT * FROM todo WHERE (DATE(updateDate) = ? OR ? IS NULL) AND (name = ? OR ? IS NULL)";
+        String sql = "SELECT t.*, u.email FROM todo t " +
+                "LEFT JOIN user u ON t.userId = u.id " +
+                "WHERE (DATE(t.updateDate) = ? OR ? IS NULL) " +
+                "AND (t.name = ? OR ? IS NULL) AND (t.userId = ? OR ? IS NULL)";
 
-        return jdbcTemplate.query(sql, toDoResponseDtoRowMapper(), dto.getDate(), dto.getDate(), dto.getName(), dto.getName());
+//                "SELECT * FROM todo WHERE (DATE(updateDate) = ? OR ? IS NULL) AND " +
+//                "(name = ? OR ? IS NULL) AND (userId = ? OR ? IS NULL)";
+
+        return jdbcTemplate.query(sql, toDoResponseDtoRowMapper(),
+                dto.getDate(), dto.getDate(), dto.getName(), dto.getName(), dto.getUserId(), dto.getUserId());
     }
 
     @Override
@@ -81,15 +91,33 @@ public class ToDoRepositoryImpl implements ToDoRepository{
         return jdbcTemplate.update("DELETE FROM todo WHERE id = ?", id);
     }
 
+    @Override
+    public Long regi(User user) {
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("user").usingGeneratedKeyColumns("id");
+
+        Map<String, Object> paprameters = new HashMap<>();
+        paprameters.put("name", user.getName());
+        paprameters.put("email", user.getEmail());
+        paprameters.put("regiDate", user.getRegiDate());
+        paprameters.put("updateDate", user.getUpdateDate());
+
+        Number id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(paprameters));
+
+        return id.longValue();
+    }
+
     private RowMapper<ToDoResponseDto> toDoResponseDtoRowMapper() {
         return new RowMapper<ToDoResponseDto>() {
             @Override
             public ToDoResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new ToDoResponseDto(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("contents"),
-                        rs.getDate("updateDate").toLocalDate()
+                        rs.getLong("t.id"),
+                        rs.getLong("t.userId"),
+                        rs.getString("t.name"),
+                        rs.getString("u.email"),
+                        rs.getString("t.contents"),
+                        rs.getDate("t.updateDate").toLocalDate()
                 );
             }
         };
@@ -105,7 +133,8 @@ public class ToDoRepositoryImpl implements ToDoRepository{
                         rs.getString("contents"),
                         rs.getString("password"),
                         rs.getTimestamp("date").toLocalDateTime(),
-                        rs.getTimestamp("updateDate").toLocalDateTime()
+                        rs.getTimestamp("updateDate").toLocalDateTime(),
+                        rs.getLong("userId")
                 );
             }
         };
