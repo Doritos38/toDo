@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handleValidException(MethodArgumentNotValidException e) {     //  Valid 관련 예외처리 핸들러
 
         StringBuilder errorMessage = new StringBuilder("Wrong form");
 
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> handleStatusException(ResponseStatusException e) {
+    public ResponseEntity<String> handleStatusException(ResponseStatusException e) {    // ResponseStatusException 핸들러
 
         StringBuilder errorMessage = new StringBuilder("Processing failed");
 

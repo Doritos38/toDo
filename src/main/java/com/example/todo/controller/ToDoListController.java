@@ -21,7 +21,7 @@ public class ToDoListController {
         this.toDoService = toDoService;
     }
 
-    @RequestMapping("/add")
+    @RequestMapping("/add")     // 할 일 저장
     public ResponseEntity<ToDoResponseDto> createToDo(@RequestBody @Valid SaveRequestDto dto) {
 
         toDoService.saveToDo(dto);
@@ -29,25 +29,25 @@ public class ToDoListController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping("/viewAll")
+    @RequestMapping("/viewAll")     // 전체 보기
     public ResponseEntity<List<ToDoResponseDto>> viewAllToDo(@RequestBody @Valid ViewAllRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.viewAll(dto), HttpStatus.OK);
     }
 
-    @RequestMapping("/allPage")
+    @RequestMapping("/allPage")     // 페이징 전체 보기
     public ResponseEntity<PagingResponseDto<ToDoResponseDto>> PaigingAllToDo(@RequestBody @Valid AllPageRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.pagingAll(dto), HttpStatus.OK);
     }
 
-    @RequestMapping("/view")
+    @RequestMapping("/view")        // 하나만 보기
     public ResponseEntity<ToDoResponseDto> viewToDo(@RequestBody @Valid ViewRequestDto dto) {
 
         return new ResponseEntity<>(toDoService.viewId(dto.getId()), HttpStatus.OK);
     }
 
-    @RequestMapping("/update")
+    @RequestMapping("/update")      // 할 일 수정
     public ResponseEntity<ToDoResponseDto> updateToDo(@RequestBody @Valid UpdateRequestDto dto) {
 
         toDoService.update(dto);
@@ -55,7 +55,7 @@ public class ToDoListController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping("/delete")
+    @RequestMapping("/delete")      // 할 일 삭제
     public ResponseEntity<ToDoResponseDto> deleteToDo(@RequestBody @Valid DeleteRequestDto dto) {
 
         toDoService.delete(dto);
@@ -63,7 +63,7 @@ public class ToDoListController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping("/regi")
+    @RequestMapping("/regi")        //  사용자 등록
     public ResponseEntity<ToDoResponseDto> regiUser(@RequestBody @Valid RegistRequestDto dto) {
 
         toDoService.regiUser(dto);

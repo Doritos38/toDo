@@ -29,7 +29,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    @Override
+    @Override       // 할 일 저장
     public Long saveToDo(ToDo toDo) {
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
@@ -49,7 +49,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
         return id.longValue();
     }
 
-    @Override
+    @Override       // 전체 보기
     public List<ToDoResponseDto> viewAll(ViewAllRequestDto dto) { // 공백 수정
 
         String sql = "SELECT t.*, u.email FROM todo t " +
@@ -62,7 +62,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
                 dto.getDate(), dto.getDate(), dto.getName(), dto.getName(), dto.getUserId(), dto.getUserId());
     }
 
-    @Override
+    @Override       // 하나만 보기
     public Optional<ToDo> viewId(Long id) {
 
         List<ToDo> result = jdbcTemplate.query("select * from todo where id = ?", toDoRowMapper(), id);
@@ -70,27 +70,27 @@ public class ToDoRepositoryImpl implements ToDoRepository {
         return result.stream().findAny();
     }
 
-    @Override
+    @Override       // 할 일 수정
     public int update(String contents, String name, LocalDateTime now, Long id) {
 
         return jdbcTemplate.update("UPDATE todo SET contents = ?, name = ?, updateDate = ? WHERE id = ?"
                 , contents, name, now, id);
     }
 
-    @Override
+    @Override       // 비밀번호 확인
     public int checkPassword(Long id, String password) {
 
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM todo WHERE id = ? AND password = ?"
                 , Integer.class, id, password);
     }
 
-    @Override
+    @Override       // 할 일 삭제
     public int delete(Long id) {
 
         return jdbcTemplate.update("UPDATE todo SET deleted = true WHERE id = ?", id);
     }
 
-    @Override
+    @Override       // 유저 등록
     public Long regi(User user) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         jdbcInsert.withTableName("user").usingGeneratedKeyColumns("id");
@@ -107,7 +107,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
         return id.longValue();
     }
 
-    @Override
+    @Override       // 페이징 전체 보기
     public List<ToDoResponseDto> paging(AllPageRequestDto dto, int offSet) {
 
         String sql = "SELECT t.*, u.email FROM todo t " +
@@ -121,7 +121,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
                 dto.getSize(), offSet);
     }
 
-    private RowMapper<ToDoResponseDto> pageResponseDtoRowMapper() {
+    private RowMapper<ToDoResponseDto> pageResponseDtoRowMapper() {     // 페이징 SQL문 결과 DTO에 담기
 
         return new RowMapper<ToDoResponseDto>() {
             @Override
@@ -139,19 +139,19 @@ public class ToDoRepositoryImpl implements ToDoRepository {
     }
 
     @Override
-    public int checkSize() {
+    public int checkSize() {        //  전체 할 일 수 체크
 
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM TODO WHERE deleted = false", Integer.class);
     }
 
     @Override
-    public boolean checkDelete(Long id) {
+    public boolean checkDelete(Long id) {       // 삭제 여부 체크
 
         return jdbcTemplate.queryForObject("SELECT deleted FROM TODO WHERE id = ?", Boolean.class, id);
     }
 
 
-    private RowMapper<ToDoResponseDto> toDoResponseDtoRowMapper() {
+    private RowMapper<ToDoResponseDto> toDoResponseDtoRowMapper() {     // 할 일 목록 전체 출력 SQL문 결과 DTO에 담기
         return new RowMapper<ToDoResponseDto>() {
             @Override
             public ToDoResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -167,7 +167,7 @@ public class ToDoRepositoryImpl implements ToDoRepository {
         };
     }
 
-    private RowMapper<ToDo> toDoRowMapper() {
+    private RowMapper<ToDo> toDoRowMapper() {       //  할 일 출력 SQL문 결과 DTO에 담기
         return new RowMapper<ToDo>() {
             @Override
             public ToDo mapRow(ResultSet rs, int rowNum) throws SQLException {
